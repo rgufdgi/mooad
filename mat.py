@@ -28,36 +28,61 @@ def inverse_matrix(arr):
             big_arr[j] -= elem2 * big_arr[i]
             
     # срез с нужным куском матрицы
-    rev_arr = big_arr[:,len(arr):]
-    #print(big_arr)        
+    rev_arr = big_arr[:,len(arr):]        
     return rev_arr
-"""
+
 def returnB(X,Y):
-    try:
-        transX = np.transpose(X)
-        helpfulmat1 = inverse_matrix(np.dot(transX, X))
-        helpfulmat2 = np.dot(helpfulmat1, transX)
-        return np.dot(helpfulmat2, Y)
-    except:
-        print('что-то не так')
-        return None
- """   
-# l - количество наблюдений, n - количество признаков
-x = np.array([[1, 3, 5, 4], [1, 7, 0, 8], [1, 11, 4, -3], \
-              [1, 8, 7, -3], [1, 2, 4, 9]], dtype=np.float64)
-y = np.array([2, 8, 9, 4, 6])
+    transx = np.transpose(X)
+    helpfulmat1 = np.dot(transx, X)
+    helpfulmat2 = inverse_matrix(helpfulmat1)
+    helpfulmat3 = np.dot(helpfulmat2, transx)
+    b = np.dot(helpfulmat3, Y)
+    return b
+ 
 
-transx = np.transpose(x)
-helpfulmat1 = np.dot(transx, x)
-print(helpfulmat1)
-helpfulmat2 = inverse_matrix(helpfulmat1)
-print(helpfulmat2)
-helpfulmat3 = np.dot(helpfulmat2, transx)
-print(helpfulmat3)
-b = np.dot(helpfulmat3, y)
-print(b)
+# пример значений из лабораторной работы
+epsilon = np.array([[0.0469], [0.0365], [0.0290], [0.0195], [0.0108]])  # y
+n = np.array([[1, 6], [1, 5], [1, 4], [1, 3], [1, 2]])  # x
 
+model = returnB(n, epsilon)
+
+# среднее значение y
+aver_y = 0
+for i in range(len(epsilon)):
+    aver_y += epsilon[i, 0]
+aver_y /= len(epsilon)
+
+# список значений полученной модели
+model_y = []
+b_0 = model[0, 0]
+b_1 = model[1, 0]
+for i in range(len(n)):
+    m_y = b_0 + b_1 * n[i, 1]
+    model_y.append(m_y)
     
+# дисперсия модели
+model_d = 0
+for i in range(len(model_y)):
+    elem_m = (epsilon[i, 0] - model_y[i]) ** 2
+    model_d += elem_m
+    
+# дисперсия среднего
+aver_d = 0
+for i in range(len(model_y)):
+    elem_a = (epsilon[i, 0] - aver_y) ** 2
+    aver_d += elem_a
+    
+R = 1 - (model_d/aver_d)
+Radj = 1 - (1 - R) * (4/3)
+
+print(f'y = {b_0} + {b_1}x')
+print(f'R = {R}, Radj = {Radj}')
+    
+
+
+
+
+
     
     
     
